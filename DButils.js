@@ -19,7 +19,7 @@ let connectionConfig = {
 };
 
 //create the pool
-let pool = new ConnectionPool(poolConfig, connectionConfig)
+let pool = new ConnectionPool(poolConfig, connectionConfig);
 
 pool.on('error', function (err) {
     if (err) {
