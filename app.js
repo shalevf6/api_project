@@ -10,10 +10,10 @@ app.listen(port, function () {
 app.get('/select', function(req, res){
     DButilsAzure.execQuery("SELECT * FROM tableName")
     .then(function(result){
-        res.send(result);
+        res.send(result)
     })
     .catch(function(err){
-        console.log(err);
-        res.send(err);
+        console.log(err)
+        res.send(err)
     })
-});
+})
