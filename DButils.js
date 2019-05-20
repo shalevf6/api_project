@@ -11,7 +11,6 @@ let poolConfig = {
     log: true
 };
 
-// TODO: edit this
 let connectionConfig = {
     userName: 'adminwebdev',
     password: 'Admin1234',
