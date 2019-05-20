@@ -22,3 +22,5 @@ app.get('/select', function(req, res){
 
 app.get('/pointOfInterest/:rank', (req, res) => {POIUtil.getPoi(req, res)});
 app.get('/pointOfInterest', (req, res) => {POIUtil.getPoi(req, res)});
+app.get('/randomPoi/:rank', (req, res) => POIUtil.getRandom(req, res));
+app.get('/randomPoi', (req, res) => POIUtil.getRandom(req, res));

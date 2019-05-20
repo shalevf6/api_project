@@ -6,7 +6,7 @@ function getPoi(req, res){
     let rank = !(Object.entries(params).length === 0 && params.constructor === Object) ? params.rank : 0;
 
     let query = db.keyWords.selectAll + db.keyWords.from + "poi " +
-        db.keyWords.where + "rank > " + rank;
+        db.keyWords.where + "rank >= " + rank;
 
     // console.log("inside");
     // console.log(query);
@@ -24,4 +24,29 @@ function getPoi(req, res){
 }
 
 
+function getRandomPoi(req, res){
+    let params = req.params;
+    let rank = !(Object.entries(params).length === 0 && params.constructor === Object) ? params.rank : 0;
+
+    let query = db.keyWords.selectAll + db.keyWords.from + "poi " +
+        db.keyWords.where + "rank >= " + rank;
+
+    let promise = db.execQuery(query);
+    promise
+        .then(result => {
+            const shuffled = result.sort(() => 0.5 - Math.random());
+            // Get sub-array of first 3 elements after shuffled
+            let selected = shuffled.slice(0, 3);
+            res.status(200).send(selected);
+        })
+        .catch(err => {
+            console.log(err);
+            res.sendStatus(500);
+        });
+}
+
+
+
+/*********************      EXPORTS     ************************/
 exports.getPoi = getPoi;
+exports.getRandom = getRandomPoi;

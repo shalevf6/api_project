@@ -11,7 +11,6 @@ const keyWords = {
     from : "FROM ",
     select : "SELECT ",
     selectAll : "SELECT * "
-
 };
 
 let poolConfig = {
