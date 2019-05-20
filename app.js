@@ -1,6 +1,7 @@
 var express = require('express');
 var app = express();
 var DButilsAzure = require('./Utils/DButils');
+var POIUtil = require('./Utils/poiUtils');
 
 var port = 3000;
 app.listen(port, function () {
@@ -13,7 +14,11 @@ app.get('/select', function(req, res){
         res.send(result)
     })
     .catch(function(err){
-        console.log(err)
-        res.send(err)
+        console.log(err);
+        res.send(err);
     })
-})
+});
+
+
+app.get('/pointOfInterest/:rank', (req, res) => {POIUtil.getPoi(req, res)});
+app.get('/pointOfInterest', (req, res) => {POIUtil.getPoi(req, res)});
