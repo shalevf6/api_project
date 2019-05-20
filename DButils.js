@@ -14,7 +14,7 @@ let poolConfig = {
 let connectionConfig = {
     userName: 'adminwebdev',
     password: 'Admin1234',
-    server: 'Assignment3webdev',
+    server: 'assignement3webdev.database.windows.net',
     options: { encrypt: true, database: 'Assignment3db' }
 };
 
