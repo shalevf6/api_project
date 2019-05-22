@@ -16,8 +16,8 @@ function getPoi(req, res){
     let promise = db.execQuery(query); // returns a list of items matching the row of the table
     promise
         .then( result => {
-        console.log(result);
-        res.status(200).send(result); // JSON.Stringify(2,null)
+            console.log(result);
+            res.status(200).send(result); // JSON.Stringify(2,null)
         })
         .catch(reason => {
             console.log(reason);
@@ -46,6 +46,27 @@ function getRandomPoi(req, res){
         });
 }
 
+/**
+ * gets all category names from the database
+ * @param req -
+ * @param res -
+ */
+function getCategories(req, res) {
+    let get_categories_query = db.keyWords.select + "name " + db.keyWords.from + "categories";
+
+    let get_categories_promise = db.execQuery(get_categories_query);
+
+    get_categories_promise
+        .then(result => {
+            res.status(200).send(result);
+        })
+        .catch(err => {
+            console.log(err);
+            res.sendStatus(500);
+        });
+}
+
+
 function updatePoiWatchers(req, res){
     let poiName = req.body.poi;
 
@@ -65,8 +86,8 @@ function updatePoiWatchers(req, res){
 }
 
 
-
 /*********************      EXPORTS     ************************/
 exports.getPoi = getPoi;
 exports.getRandom = getRandomPoi;
+exports.getCategories = getCategories;
 exports.updatePoiWatchers = updatePoiWatchers;
