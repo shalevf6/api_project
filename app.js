@@ -3,6 +3,7 @@ var express = require('express');
 var app = express();
 var DButilsAzure = require('./Utils/DButils');
 var POIUtil = require('./Utils/poiUtils');
+const jwt = require('jsonwebtoken');
 
 let port = 3000;
 
@@ -14,21 +15,10 @@ app.listen(port, function () {
     console.log('Example app listening on port ' + port);
 });
 
-//
-// app.get('/select', function(req, res){
-//     DButilsAzure.execQuery("SELECT * FROM tableName")
-//         .then(function(result){
-//             res.send(result)
-//         })
-//         .catch(function(err){
-//             console.log(err);
-//             res.send(err)
-//         })
-// });
 
 app.post("/login", (req, res) => {
-    payload = { id: 1, name: "user1", admin: true };
-    options = { expiresIn: "1d" };
+    let payload = { id: 1, name: "user1", admin: true };
+    let options = { expiresIn: "1d" };
     const token = jwt.sign(payload, secret, options);
     res.send(token);
 });
@@ -143,7 +133,7 @@ app.post('/api/sign_up', function(req, res){
 });
 
 
-app.get('/pointOfInterest/:rank', (req, res) => {POIUtil.getPoi(req, res)});
+app.get('/pointOfInterest/:rank', (req, res) => {POIUtil.getPoi(req, res)}); // needs to be change to contains
 app.get('/pointOfInterest', (req, res) => {POIUtil.getPoi(req, res)});
 app.get('/randomPoi/:rank', (req, res) => POIUtil.getRandom(req, res));
 app.get('/randomPoi', (req, res) => POIUtil.getRandom(req, res));
