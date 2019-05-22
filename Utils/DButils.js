@@ -5,6 +5,14 @@ let ConnectionPool = require('tedious-connection-pool');
 let Request = require('tedious').Request;
 let TYPES = require('tedious').TYPES;
 
+const keyWords = {
+    insert : "INSERT ",
+    where : "WHERE ",
+    from : "FROM ",
+    select : "SELECT ",
+    selectAll : "SELECT * "
+};
+
 let poolConfig = {
     min: 2,
     max: 5,
@@ -30,7 +38,8 @@ pool.on('error', function (err) {
 console.log('pool connection on');
 
 
-//----------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------  EXPORTS  -----------------------------------------------------
+exports.keyWords = keyWords;
 exports.execQuery = function (query) {
     return new Promise(function (resolve, reject) {
 
