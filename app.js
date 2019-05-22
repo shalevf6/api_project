@@ -4,6 +4,8 @@ let DButilsAzure = require('./Utils/DButils');
 
 let port = 3000;
 
+secret = "thisIsASecret";
+
 app.use(express.json());
 
 app.listen(port, function () {
@@ -21,6 +23,30 @@ app.listen(port, function () {
 //             res.send(err)
 //         })
 // });
+
+app.post("/login", (req, res) => {
+    payload = { id: 1, name: "user1", admin: true };
+    options = { expiresIn: "1d" };
+    const token = jwt.sign(payload, secret, options);
+    res.send(token);
+});
+
+app.post("/private", (req, res) => {
+    const token = req.header("x-auth-token");
+    // no token
+    if (!token) res.status(401).send("Access denied. No token provided.");
+    // verify token
+    try {
+        const decoded = jwt.verify(token, secret);
+        req.decoded = decoded;
+        if (req.decoded.admin)
+            res.status(200).send({ result: "Hello admin." });
+        else
+            res.status(200).send({ result: "Hello user." });
+    } catch (exception) {
+        res.status(400).send("Invalid token.");
+    }
+});
 
 app.post('/api/sign_up', function(req, res){
 

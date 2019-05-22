@@ -10,8 +10,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.16.4",
+    "express": "^4.17.0",
     "tedious": "^6.1.1",
-    "tedious-connection-pool": "^1.0.5"
+    "tedious-connection-pool": "^1.0.5",
+    "jsonwebtoken": "^8.5.1"
   }
 }
