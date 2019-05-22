@@ -10,7 +10,9 @@ const keyWords = {
     where : "WHERE ",
     from : "FROM ",
     select : "SELECT ",
-    selectAll : "SELECT * "
+    selectAll : "SELECT * ",
+    update: "UPDATE ",
+    set: "SET "
 };
 
 let poolConfig = {

@@ -1,4 +1,3 @@
-
 var express = require('express');
 var app = express();
 var POIUtil = require('./Utils/poiUtils');
@@ -7,7 +6,9 @@ const jwt = require('jsonwebtoken');
 
 let port = 3000;
 
-secret = "SecretTheFuckUp";
+var id = 0;
+const secret = "thisIsASecret";
+
 
 app.use(express.json());
 
@@ -39,12 +40,14 @@ app.listen(port, function () {
 
 /*************************    HTTP METHODS SETUP    ***************************/
 
-app.get('/pointOfInterest/:rank', (req, res) => {POIUtil.getPoi(req, res)}); // needs to be change to contains
-app.get('/pointOfInterest', (req, res) => {POIUtil.getPoi(req, res)});
+app.get('/poi/:rank', (req, res) => {POIUtil.getPoi(req, res)}); // needs to be change to contains
+app.get('/poiCategory/:category', (req, res) => {POIUtil.getPoi(req, res)});
+app.get('/poi', (req, res) => {POIUtil.getPoi(req, res)});
 app.get('/randomPoi/:rank', (req, res) => POIUtil.getRandom(req, res));
 app.get('/randomPoi', (req, res) => POIUtil.getRandom(req, res));
 app.post('/login', (req, res) => userUtil.login(req, res));
 app.post('/sign_up', (req, res) => userUtil.sign_up(req, res));
 app.get('/categories', (req, res) => POIUtil.getCategories(req, res));
 app.post('/restorePassword', (req, res) => userUtil.restore_password(req, res));
+app.patch('/updateWatchers', (req, res) => POIUtil.updatePoiWatchers(req, res));
 

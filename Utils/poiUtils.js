@@ -3,13 +3,15 @@ var db = require('./DButils');
 
 function getPoi(req, res){
     let params = req.params;
-    let rank = !(Object.entries(params).length === 0 && params.constructor === Object) ? params.rank : 0;
+    let rank = params.rank ? params.rank : 0;
+    let category = params.category ? params.category : 0;
+
 
     let query = db.keyWords.selectAll + db.keyWords.from + "poi " +
         db.keyWords.where + "rank >= " + rank;
-
-    // console.log("inside");
-    // console.log(query);
+    if (category){
+        query += " AND category = '" + category +"'";
+    }
 
     let promise = db.execQuery(query); // returns a list of items matching the row of the table
     promise
@@ -22,7 +24,6 @@ function getPoi(req, res){
             res.sendStatus(500);
         });
 }
-
 
 function getRandomPoi(req, res){
     let params = req.params;
@@ -66,7 +67,27 @@ function getCategories(req, res) {
 }
 
 
+function updatePoiWatchers(req, res){
+    let poiName = req.body.poi;
+
+    let query = db.keyWords.update + "poi " +
+        db.keyWords.set  + "watched = watched + 1 " +
+        db.keyWords.where + "name = '" + poiName + "'";
+
+    let promise = db.execQuery(query);
+    promise.then(result => {
+        console.log(result);
+        res.sendStatus(200);
+    })
+        .catch(err => {
+            console.log(err);
+            res.sendStatus(500);
+        });
+}
+
+
 /*********************      EXPORTS     ************************/
 exports.getPoi = getPoi;
 exports.getRandom = getRandomPoi;
 exports.getCategories = getCategories;
+exports.updatePoiWatchers = updatePoiWatchers;
