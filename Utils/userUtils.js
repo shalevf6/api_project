@@ -287,9 +287,37 @@ function getUserRecommendedPoi(req, res) {
         });
 }
 
+/**
+ * gets the list of all the user's favorite POIs
+ * @param req -
+ * @param res -
+ */
+function getUserFavoritePoi(req, res) {
+    let username = req.decoded.name;
+
+    // gets the chosen favorite categories of the user
+    let get_users_poi_query = db.keyWords.select + "poi " + db.keyWords.from + "usersPoi " + db.keyWords.where +
+        "username = '" + username + "'";
+
+    let get_users_poi_promise = db.execQuery(get_users_poi_query);
+
+    get_users_poi_promise
+        .then(result => {
+            if (result.length > 0)
+                res.status(200).send(result);
+            else
+                res.status(404).send("No favorite POI found");
+        })
+        .catch(err => {
+            console.log(err);
+            res.sendStatus(500);
+        });
+}
+
 /*********************      EXPORTS     ************************/
 exports.login = login;
 exports.sign_up = sign_up;
 exports.restore_password = restore_password;
 exports.getQuestions = getQuestions;
 exports.getUserRecommendedPoi = getUserRecommendedPoi;
+exports.getUserFavoritePoi = getUserFavoritePoi;
