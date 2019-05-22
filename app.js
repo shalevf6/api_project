@@ -3,7 +3,8 @@ var express = require('express');
 var app = express();
 var DButilsAzure = require('./Utils/DButils');
 var POIUtil = require('./Utils/poiUtils');
-const jwt = require("jsonwebtoken");
+const jwt = require('jsonwebtoken');
+
 
 let port = 3000;
 
@@ -12,6 +13,7 @@ secret = "thisIsASecret";
 
 
 app.use(express.json());
+
 
 
 app.use('/private', function(req,res,next) {
@@ -152,7 +154,7 @@ app.post('/api/sign_up', function(req, res){
 });
 
 
-app.get('/pointOfInterest/:rank', (req, res) => {POIUtil.getPoi(req, res)});
+app.get('/pointOfInterest/:rank', (req, res) => {POIUtil.getPoi(req, res)}); // needs to be change to contains
 app.get('/pointOfInterest', (req, res) => {POIUtil.getPoi(req, res)});
 app.get('/randomPoi/:rank', (req, res) => POIUtil.getRandom(req, res));
 app.get('/randomPoi', (req, res) => POIUtil.getRandom(req, res));
