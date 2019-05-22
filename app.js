@@ -5,25 +5,18 @@ var DButilsAzure = require('./Utils/DButils');
 var POIUtil = require('./Utils/poiUtils');
 const jwt = require('jsonwebtoken');
 
+
 let port = 3000;
 
+id = 0;
 secret = "thisIsASecret";
+
 
 app.use(express.json());
 
-app.listen(port, function () {
-    console.log('Example app listening on port ' + port);
-});
 
 
-app.post("/login", (req, res) => {
-    let payload = { id: 1, name: "user1", admin: true };
-    let options = { expiresIn: "1d" };
-    const token = jwt.sign(payload, secret, options);
-    res.send(token);
-});
-
-app.post("/private", (req, res) => {
+app.use('/private', function(req,res,next) {
     const token = req.header("x-auth-token");
     // no token
     if (!token) res.status(401).send("Access denied. No token provided.");
@@ -31,14 +24,42 @@ app.post("/private", (req, res) => {
     try {
         const decoded = jwt.verify(token, secret);
         req.decoded = decoded;
-        if (req.decoded.admin)
-            res.status(200).send({ result: "Hello admin." });
-        else
-            res.status(200).send({ result: "Hello user." });
+        next();
     } catch (exception) {
         res.status(400).send("Invalid token.");
     }
 });
+
+
+app.listen(port, function () {
+    console.log('Example app listening on port ' + port);
+});
+
+
+app.post("/login", (req, res) => {
+    let payload = { id: ++id, name: req.body.username, admin: req.decoded.admin };
+    let options = { expiresIn: "1d" };
+    const token = jwt.sign(payload, secret, options);
+    res.send(token);
+});
+
+
+// app.post("/private", (req, res) => {
+//     const token = req.header("x-auth-token");
+//     // no token
+//     if (!token) res.status(401).send("Access denied. No token provided.");
+//     // verify token
+//     try {
+//         const decoded = jwt.verify(token, secret);
+//         req.decoded = decoded;
+//         if (req.decoded.admin)
+//             res.status(200).send({ result: "Hello admin." });
+//         else
+//             res.status(200).send({ result: "Hello user." });
+//     } catch (exception) {
+//         res.status(400).send("Invalid token.");
+//     }
+// });
 
 app.post('/api/sign_up', function(req, res){
 
