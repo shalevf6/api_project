@@ -51,3 +51,4 @@ app.post('/restorePassword', (req, res) => userUtil.restore_password(req, res));
 app.patch('/updateWatchers', (req, res) => POIUtil.updatePoiWatchers(req, res));
 app.get('/questions', (req, res) => userUtil.getQuestions(req, res));
 app.get('/private/recommendedPoi', (req, res) => userUtil.getUserRecommendedPoi(req, res));
+app.get('/private/favoritePoi', (req, res) => userUtil.getUserFavoritePoi(req, res));
