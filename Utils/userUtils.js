@@ -1,4 +1,5 @@
 var db = require('./DButils');
+const jwt = require('jsonwebtoken');
 
 const question_list = ['What elementary school did you attend?', 'What is the name of the town where you were born?',
 'What is your mother\'s maiden name?', 'What is your favorite sports team?'];

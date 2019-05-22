@@ -54,19 +54,5 @@ app.get('/private/recommendedPoi', (req, res) => userUtil.getUserRecommendedPoi(
 app.get('/latestReview/:poi', (req, res) => POIUtil.latestReviews(req, res));
 app.post('/private/addReview', (req, res) => POIUtil.addReview(req, res));
 
-/*
-var date1 = new Date();
-var date2 = new Date();
-date2.setMonth(1);
-var date3 = new Date();
-date3.setMonth(8);
-var date4 = new Date();
-date4.setMonth(2);
-
-console.log(date2.toISOString());
-var date2c = new Date(date2.toISOString());
-
-console.log(date1, date2, date3, date4);
-*/
 
 
