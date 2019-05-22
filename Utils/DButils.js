@@ -6,13 +6,16 @@ let Request = require('tedious').Request;
 let TYPES = require('tedious').TYPES;
 
 const keyWords = {
-    insert : "INSERT ",
+    insert : "INSERT INTO ",
     where : "WHERE ",
     from : "FROM ",
     select : "SELECT ",
     selectAll : "SELECT * ",
     update: "UPDATE ",
-    set: "SET "
+    set: "SET ",
+    valuesStart: "VALUES (",
+    valuesEnd: ");"
+
 };
 
 let poolConfig = {

@@ -66,7 +66,6 @@ function getCategories(req, res) {
         });
 }
 
-
 function updatePoiWatchers(req, res){
     let poiName = req.body.poi;
 
@@ -85,9 +84,63 @@ function updatePoiWatchers(req, res){
         });
 }
 
+function getLastPoiReview(req, res){
+    let params = req.params;
+    let poi = params.poi ? params.poi : 0;
+
+    if (poi){
+        let query = db.keyWords.selectAll +
+            db.keyWords.from + "usersReviews " +
+            db.keyWords.where + "poi = '" + poi + "'";
+
+        let promise = db.execQuery(query);
+        promise.then(result => {
+            let latest2 = [];
+
+            result.forEach(item => {
+                item.time = new Date(item.time);
+            });
+            result.sort((a,b) =>  (a.time < b.time) ? 1 : ((b.time < a.time) ? -1 : 0));
+
+            latest2 = result.slice(0,2);
+            res.status(200).send(latest2);
+        })
+    }
+    else {
+        let err = "error: no poi name was given";
+        console.log(err);
+        res.status(400).send(err);
+    }
+}
+
+function addPoiReview(req, res){
+    let username = putParethesis(req.decoded.name),
+        poi = putParethesis(req.body.poi),
+        rank = req.body.rank,
+        time = putParethesis((new Date()).toISOString()),
+        review = putParethesis(req.body.review);
+
+    let query = db.keyWords.insert + "usersReviews " +
+        db.keyWords.valuesStart + username + "," + poi + "," + rank + "," + review + "," + time + db.keyWords.valuesEnd;
+
+    let promise = db.execQuery(query);
+    promise.then(result => {
+        res.status(201).send("Review added successfully");
+    })
+        .catch(err =>{
+            res.status(500).send('Oops... looks like your review was not accepted. Please submit again');
+        })
+}
+
+function putParethesis(string){
+    return "'" + string + "'";
+}
+
 
 /*********************      EXPORTS     ************************/
 exports.getPoi = getPoi;
 exports.getRandom = getRandomPoi;
 exports.getCategories = getCategories;
 exports.updatePoiWatchers = updatePoiWatchers;
+exports.latestReviews = getLastPoiReview;
+exports.addReview = addPoiReview;
