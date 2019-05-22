@@ -52,3 +52,6 @@ app.patch('/updateWatchers', (req, res) => POIUtil.updatePoiWatchers(req, res));
 app.get('/questions', (req, res) => userUtil.getQuestions(req, res));
 app.get('/private/recommendedPoi', (req, res) => userUtil.getUserRecommendedPoi(req, res));
 app.get('/private/favoritePoi', (req, res) => userUtil.getUserFavoritePoi(req, res));
+app.get('/latestReview/:poi', (req, res) => POIUtil.latestReviews(req, res));
+app.post('/private/addReview', (req, res) => POIUtil.addReview(req, res));
+

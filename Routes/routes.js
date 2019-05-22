@@ -1,5 +1,5 @@
 var DButilsAzure = require('../Utils/DButils');
-var app = require('../app').lala;
+var app = require('../app');
 
 app.get('/select', function(req, res){
     console.log('inside select');
