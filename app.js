@@ -6,7 +6,6 @@ const jwt = require('jsonwebtoken');
 
 let port = 3000;
 
-var id = 0;
 const secret = "thisIsASecret";
 
 
@@ -50,6 +49,8 @@ app.post('/sign_up', (req, res) => userUtil.sign_up(req, res));
 app.get('/categories', (req, res) => POIUtil.getCategories(req, res));
 app.post('/restorePassword', (req, res) => userUtil.restore_password(req, res));
 app.patch('/updateWatchers', (req, res) => POIUtil.updatePoiWatchers(req, res));
+app.get('/questions', (req, res) => userUtil.getQuestions(req, res));
+app.get('/private/recommendedPoi', (req, res) => userUtil.getUserRecommendedPoi(req, res));
 app.get('/latestReview/:poi', (req, res) => POIUtil.latestReviews(req, res));
 app.post('/private/addReview', (req, res) => POIUtil.addReview(req, res));
 

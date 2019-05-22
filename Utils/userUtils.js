@@ -1,5 +1,8 @@
 var db = require('./DButils');
 
+const question_list = ['What elementary school did you attend?', 'What is the name of the town where you were born?',
+'What is your mother\'s maiden name?', 'What is your favorite sports team?'];
+
 
 /**************************     DATABASE FUNCTIONS      **************************/
 
@@ -167,7 +170,7 @@ function restore_password(req, res){
             if (result.length === 1) {
 
                 // gets the user's password
-                let get_password_query = db.keyWords.select + "password" + db.keyWords.from + "users " +
+                let get_password_query = db.keyWords.select + "password " + db.keyWords.from + "users " +
                     db.keyWords.where + "username = '" + username + "'";
 
                 let get_password_promise = db.execQuery(get_password_query);
@@ -181,8 +184,101 @@ function restore_password(req, res){
                         res.sendStatus(500);
                     });
             } else {
-                res.status(401).send("Access denied. No user found");
+                res.status(401).send("Access denied. Wrong user / answer");
             }
+        })
+        .catch(err => {
+            console.log(err);
+            res.sendStatus(500);
+        });
+}
+
+/**
+ * gets all available authentication questions
+ * @param req -
+ * @param res -
+ */
+function getQuestions(req, res) {
+    res.status(200).send(question_list);
+}
+
+/**
+ * gets the 2 highest ranked POI, each of a different category
+ * @param req -
+ * @param res -
+ */
+function getUserRecommendedPoi(req, res) {
+    let username = req.decoded.name;
+
+    // gets the chosen favorite categories of the user
+    let get_users_categories_query = db.keyWords.select + "category " + db.keyWords.from + "usersCategories " + db.keyWords.where +
+        "username = '" + username + "'";
+
+    let get_users_categories_promise = db.execQuery(get_users_categories_query);
+
+    get_users_categories_promise
+        .then(result => {
+
+            let category_equals = "category = '";
+            let favorite_categories_for_query = "";
+
+            favorite_categories_for_query = favorite_categories_for_query + category_equals + result[0].category + "'";
+
+            // adds all categories to the sql string
+            let i = 1;
+            while (i < result.length) {
+                favorite_categories_for_query = favorite_categories_for_query + " OR " + category_equals + result[i].category + "'";
+                i++;
+            }
+
+            // gets the chosen favorite categories of the user
+            let get_recommended_poi_query = db.keyWords.selectAll + db.keyWords.from + "poi " + db.keyWords.where +
+                favorite_categories_for_query;
+
+            let get_recommended_poi_promise = db.execQuery(get_recommended_poi_query);
+
+            get_recommended_poi_promise
+                .then(inner_result => {
+
+                    let category_array = [];
+
+                    i = 0;
+                    // create the 2 dimensional array
+                    while (i < result.length) {
+                        category_array.push([]);
+                        i++;
+                    }
+
+                    inner_result.forEach(item => {
+                        i = 0;
+                        result.forEach(inner_item => {
+                           if (inner_item.category === item.category) {
+                               category_array[i].push(item);
+                           }
+                           else
+                               i++;
+                        });
+                    });
+
+                    category_array.forEach(item => {
+                        item.sort((a,b) =>  (a.rank > b.rank) ? 1 : ((b.rank > a.rank) ? -1 : 0));
+                    });
+
+                    const shuffled = category_array.sort(() => 0.5 - Math.random());
+                    // Get sub-array of first 2 elements after shuffled
+                    let selected = shuffled.slice(0, 2);
+
+                    let best_poi = [];
+
+                    best_poi.push(selected[0].pop());
+                    best_poi.push(selected[1].pop());
+
+                    res.status(200).send(best_poi);
+                })
+                .catch(err => {
+                    console.log(err);
+                    res.sendStatus(500);
+                });
         })
         .catch(err => {
             console.log(err);
@@ -194,3 +290,5 @@ function restore_password(req, res){
 exports.login = login;
 exports.sign_up = sign_up;
 exports.restore_password = restore_password;
+exports.getQuestions = getQuestions;
+exports.getUserRecommendedPoi = getUserRecommendedPoi;
