@@ -1,4 +1,3 @@
-
 var express = require('express');
 var app = express();
 var DButilsAzure = require('./Utils/DButils');
@@ -8,7 +7,9 @@ const jwt = require('jsonwebtoken');
 
 let port = 3000;
 
-secret = "SecretTheFuckUp";
+var id = 0;
+const secret = "thisIsASecret";
+
 
 app.use(express.json());
 
@@ -176,8 +177,13 @@ app.post('/sign_up', function(req, res){
 });
 
 
-app.get('/pointOfInterest/:rank', (req, res) => {POIUtil.getPoi(req, res)}); // needs to be change to contains
-app.get('/pointOfInterest', (req, res) => {POIUtil.getPoi(req, res)});
+app.get('/poi/:rank', (req, res) => {POIUtil.getPoi(req, res)}); // needs to be change to contains
+app.get('/poiCategory/:category', (req, res) => {POIUtil.getPoi(req, res)});
+app.get('/poi', (req, res) => {POIUtil.getPoi(req, res)});
 app.get('/randomPoi/:rank', (req, res) => POIUtil.getRandom(req, res));
 app.get('/randomPoi', (req, res) => POIUtil.getRandom(req, res));
+app.patch('/updateWatchers', (req, res) => POIUtil.updatePoiWatchers(req, res));
+
+
+
 
