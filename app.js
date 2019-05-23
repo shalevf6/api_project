@@ -45,7 +45,7 @@ app.get('/poi', (req, res) => {POIUtil.getPoi(req, res)});
 app.get('/randomPoi/:rank', (req, res) => POIUtil.getRandom(req, res));
 app.get('/randomPoi', (req, res) => POIUtil.getRandom(req, res));
 app.post('/login', (req, res) => userUtil.login(req, res));
-app.post('/sign_up', (req, res) => userUtil.sign_up(req, res));
+app.post('/signUp', (req, res) => userUtil.signUp(req, res));
 app.get('/categories', (req, res) => POIUtil.getCategories(req, res));
 app.post('/restorePassword', (req, res) => userUtil.restore_password(req, res));
 app.patch('/updateWatchers', (req, res) => POIUtil.updatePoiWatchers(req, res));
@@ -54,6 +54,7 @@ app.get('/private/recommendedPoi', (req, res) => userUtil.getUserRecommendedPoi(
 app.get('/private/favoritePoi', (req, res) => userUtil.getUserFavoritePoi(req, res));
 app.get('/latestReview/:poi', (req, res) => POIUtil.latestReviews(req, res));
 app.post('/private/addReview', (req, res) => POIUtil.addReview(req, res));
+app.get('/private/lastSavedPoi', (req, res) => userUtil.getLastSavedPoi(req, res));
 app.put('/private/saveFavorites', (req, res) => userUtil.saveFavoritePoi(req, res));
 
 // TODO : ADD IMAGES TO DATABASE
@@ -68,4 +69,3 @@ app.post('/addImages', function(req, res) {
         .then(result => {
         });
 });
-
