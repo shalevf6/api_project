@@ -6,102 +6,99 @@ const question_list = ['What elementary school did you attend?', 'What is the na
 
 
 /**************************     DATABASE FUNCTIONS      **************************/
-
+function putParethesis(string){
+    return "'" + string + "'";
+}
 /**
  * checks if a username already exists. if not, adds the new user's details to the database
  * @param req -
  * @param res -
  */
-function sign_up(req, res){
+function signUp(req, res){
+    let username = req.body.username,
+        password = req.body.password,
+        fName = req.body.fName,
+        lName = req.body.lName,
+        city = req.body.city,
+        country = req.body.country,
+        email = req.body.email,
+        favoriteCat = req.body.favoriteCat,
+        questions = req.body.questions; // should be an array of objects with Q,A
 
-    let username = req.body.username;
-    console.log(username);
 
-    // checks if the username already exists in the database
-    let user_exists_query = "SELECT username FROM users WHERE username = " + username;
-
-    let user_name_exists = db.execQuery(user_exists_query);
-
-    user_name_exists
+    let query = db.keyWords.selectAll + db.keyWords.from + "users " +
+        db.keyWords.where + "username = '" + username + "'";
+    let confirmPromise = db.execQuery(query);
+    confirmPromise
         .then(result => {
-
-            // user doesn't exist in the database
-            if (result.length > 0) {
-                console.log(result);
-
-                // adds all the general details about the user to the database
-                let add_general_user_query = "INSERT INTO users VALUES (" + username + " , " + req.body.password + " , " +
-                    req.body.first_name + " , " + req.body.last_name + " , " + req.body.email + " , " + req.body.city + " , " +
-                    req.body.country + ")";
-
-                let add_user = db.execQuery(add_general_user_query);
-
-                // add_user.then(function (q1_result) {
-                //     res.send(q1_result);
-                // });
-
-                add_user.catch(error => {
-                    console.log(err);
-                    res.sendStatus(500);
-                });
-
-                let user_questions = req.body.questions;
-                let user_answers = req.body.answers;
-                let i = 0;
-
-                // loop through all the user's recovery questions and answers and add them to the database
-                while (i < user_questions.length) {
-                    // adds the user's recovery questions and answers
-                    let add_questions_query = "INSERT INTO usersQuestions VALUES (" + username + " , " + user_questions[i] +
-                        " , " + user_answers[i] + ")";
-
-                    let add_questions = db.execQuery(add_questions_query);
-
-                    // add_questions.then(function (q2_result) {
-                    //     res.send(q2_result);
-                    // });
-
-                    add_questions.catch(error => {
-                        console.log(err);
-                        res.sendStatus(500);
-                    });
-                    i++;
-                }
-
-                let user_categories = req.body.questions;
-                i = 0;
-
-                // loop through all the user's favorite categories and add them to the database
-                while (i < user_categories.length) {
-
-                    // adds a user's favorite category
-                    let add_category_query = "INSERT INTO usersCategories VALUES (" + username + " , " + user_categories[i] + ")";
-
-                    let add_category = db.execQuery(add_category_query);
-
-                    // add_category.then(function (q3_result) {
-                    //     res.send(q3_result);
-                    // });
-
-                    add_category.catch(error => {
-                        console.log(err);
-                        res.sendStatus(500);
-                    });
-                }
-
-                // sends the the newly created user's username
-                res.status(201).send(JSON.parse('{“username”:”' + username + '"}'));
-            }
-
-            // user already exists in the database
-            else {
-                res.status(404).send("username already exists");
+            if (result.length !== 0){
+                throw new Error('This username already exist. Please choose another one.');
             }
         })
-        .catch(err =>{
-            console.log(err);
-            res.sendStatus(500);
-        });
+        .then(result => {
+            let queryUser = db.keyWords.insert + "users " +
+                db.keyWords.valuesStart + putParethesis(username) + "," + putParethesis(password) + "," +
+                putParethesis(fName) + "," + putParethesis(lName) + "," + putParethesis(email) + "," +
+                putParethesis(city) + "," + putParethesis(country) + db.keyWords.valuesEnd;
+
+            let queryQuest = insertQuestions(username, questions);
+            let queryCat = insertCategories(username, favoriteCat);
+
+            let promise1 = db.execQuery(queryUser),
+                promise2 = db.execQuery(queryQuest),
+                promise3 = db.execQuery(queryCat);
+
+            promise1
+                .then(result => {
+                    console.log("user: " + username + " added successfully");
+                    return promise2;
+                })
+                .then(result => {
+                    console.log("inside");
+                    return promise3;
+                })
+                .then(result => {
+                    res.status(201).send("User created successfully!");
+                })
+                .catch(err => {
+                    //TODO: fallback if one of them fail.
+                    console.log(err);
+                    res.status(500).send(err);
+                })
+        })
+        .catch(err => {
+            console.log(err.message);
+            res.status(500).send(err.message);
+        })
+
+}
+
+function insertQuestions(username, questions){
+    console.log("Adding questions to DB...");
+
+    let queryCur = db.keyWords.insert + "usersQuestions " +
+        "VALUES ";
+
+    questions.forEach(item => {
+        queryCur += "(" + putParethesis(username) + "," + putParethesis(item.quest) + "," + putParethesis(item.ans) + "),";
+    });
+    queryCur = queryCur.slice(0, -1);
+    queryCur += ";";
+    return queryCur;
+}
+
+function insertCategories(username, categories){
+    console.log("Adding categories for user " + username + " to DB...");
+
+    let queryCur = db.keyWords.insert + "usersCategories " +
+        "VALUES ";
+
+    categories.forEach(item => {
+        queryCur += "(" + putParethesis(username) + "," + putParethesis(item) + "),";
+    });
+    queryCur = queryCur.slice(0, -1);
+    queryCur += ";";
+    return queryCur;
 }
 
 
@@ -314,10 +311,36 @@ function getUserFavoritePoi(req, res) {
         });
 }
 
+function getLastSavedPoi(req, res){
+    let username = req.decoded.name;
+
+    let query = db.keyWords.selectAll +
+        db.keyWords.from + "usersPoi " +
+        db.keyWords.where + "username = '" + username + "'";
+
+    let promise = db.execQuery(query);
+    promise.then(result => {
+        let latest2 = [];
+
+        result.forEach(item => {
+            item.time = new Date(item.time);
+        });
+        result.sort((a,b) =>  (a.time < b.time) ? 1 : ((b.time < a.time) ? -1 : 0));
+
+        latest2 = result.slice(0,2);
+        res.status(200).send(latest2);
+    })
+        .catch(err => {
+            console.log(err);
+            res.status(500).send(err);
+        })
+}
+
 /*********************      EXPORTS     ************************/
 exports.login = login;
-exports.sign_up = sign_up;
+exports.signUp = signUp;
 exports.restore_password = restore_password;
 exports.getQuestions = getQuestions;
 exports.getUserRecommendedPoi = getUserRecommendedPoi;
 exports.getUserFavoritePoi = getUserFavoritePoi;
+exports.getLastSavedPoi = getLastSavedPoi;
