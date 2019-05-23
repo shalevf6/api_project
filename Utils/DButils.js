@@ -14,8 +14,8 @@ const keyWords = {
     update: "UPDATE ",
     set: "SET ",
     valuesStart: "VALUES (",
-    valuesEnd: ");"
-
+    valuesEnd: ");",
+    delete : "DELETE "
 };
 
 let poolConfig = {

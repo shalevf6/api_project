@@ -2,7 +2,7 @@ var db = require('./DButils');
 const jwt = require('jsonwebtoken');
 
 const question_list = ['What elementary school did you attend?', 'What is the name of the town where you were born?',
-'What is your mother\'s maiden name?', 'What is your favorite sports team?'];
+    'What is your mother\'s maiden name?', 'What is your favorite sports team?'];
 
 
 /**************************     DATABASE FUNCTIONS      **************************/
@@ -253,11 +253,11 @@ function getUserRecommendedPoi(req, res) {
                     inner_result.forEach(item => {
                         i = 0;
                         result.forEach(inner_item => {
-                           if (inner_item.category === item.category) {
-                               category_array[i].push(item);
-                           }
-                           else
-                               i++;
+                            if (inner_item.category === item.category) {
+                                category_array[i].push(item);
+                            }
+                            else
+                                i++;
                         });
                     });
 
@@ -314,6 +314,62 @@ function getUserFavoritePoi(req, res) {
         });
 }
 
+/**
+ * saves the user's favorite POI list
+ * @param req -
+ * @param res -
+ */
+function saveFavoritePoi(req, res) {
+    let username = req.decoded.name;
+
+    // deletes the old favorite user's pois
+    let delete_favorite_query = db.keyWords.delete + db.keyWords.from + "usersPoi " + db.keyWords.where +
+        "username = '" + username + "'";
+
+    let delete_favorite_promise = db.execQuery(delete_favorite_query);
+
+    delete_favorite_promise
+        .then(result => {
+
+            // checks if there are any poi object in the favorite poi list
+            if (req.body.favorite_poi.length > 0) {
+
+                // adds a new favorite user's poi
+                let add_favorite_query = db.keyWords.insert + "usersPoi " + db.keyWords.valuesStart +
+                    "'" + username + "', '" + req.body.favorite_poi[0].poi + "', '" + req.body.favorite_poi[0].personalOrder + "', '" +
+                    req.body.favorite_poi[0].time + "')";
+
+                let first = true;
+                req.body.favorite_poi.forEach(item => {
+
+                    // skipping the first item
+                    if (first) {
+                        first = false;
+                        return;
+                    }
+
+                    // adds a new favorite user's poi
+                    add_favorite_query = add_favorite_query + ", ('" + username + "', '" + item.poi + "', '" + item.personalOrder + "', '" +
+                        item.time + "')";
+                });
+
+                add_favorite_query = add_favorite_query + ";";
+                let add_favorite_promise = db.execQuery(add_favorite_query);
+
+                add_favorite_promise
+                    .catch(err => {
+                        console.log(err);
+                        res.sendStatus(500);
+                    });
+            }
+            res.status(201).send("User's favorite POI list updated");
+        })
+        .catch(err => {
+            console.log(err);
+            res.sendStatus(500);
+        });
+}
+
 /*********************      EXPORTS     ************************/
 exports.login = login;
 exports.sign_up = sign_up;
@@ -321,3 +377,4 @@ exports.restore_password = restore_password;
 exports.getQuestions = getQuestions;
 exports.getUserRecommendedPoi = getUserRecommendedPoi;
 exports.getUserFavoritePoi = getUserFavoritePoi;
+exports.saveFavoritePoi = saveFavoritePoi;

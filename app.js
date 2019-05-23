@@ -54,4 +54,18 @@ app.get('/private/recommendedPoi', (req, res) => userUtil.getUserRecommendedPoi(
 app.get('/private/favoritePoi', (req, res) => userUtil.getUserFavoritePoi(req, res));
 app.get('/latestReview/:poi', (req, res) => POIUtil.latestReviews(req, res));
 app.post('/private/addReview', (req, res) => POIUtil.addReview(req, res));
+app.put('/private/saveFavorites', (req, res) => userUtil.saveFavoritePoi(req, res));
+
+// TODO : ADD IMAGES TO DATABASE
+app.post('/addImages', function(req, res) {
+
+    let add_image_query = db.keyWords.update + "poi " + db.keyWords.where +
+        "username = '" + username + "'";
+
+    let add_image_promise = db.execQuery(add_image_query);
+
+    add_image_promise
+        .then(result => {
+        });
+});
 
