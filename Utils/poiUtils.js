@@ -125,7 +125,31 @@ function addPoiReview(req, res){
 
     let promise = db.execQuery(query);
     promise.then(result => {
-        res.status(201).send("Review added successfully");
+        let get_poi_reviews_query = db.keyWords.select + "rank " + db.keyWords.from + "usersReviews " + db.keyWords.where +
+            "poi = '" + poi + "'";
+        let get_poi_reviews_promise = db.execQuery(get_poi_reviews_query);
+        get_poi_reviews_promise
+            .then(inner_result => {
+               let rank_sum = 0;
+               inner_result.forEach(item => {
+                   rank_sum += item.rank;
+               });
+               let new_rank = rank_sum / inner_result.length;
+
+               let update_poi_rank_query = db.keyWords.update + "poi " + db.keyWords.set + "rank = " + new_rank + " "  +
+                   db.keyWords.where + "poi = '" + poi + "'";
+               let update_poi_rank_promise = db.execQuery(update_poi_rank_query);
+               update_poi_rank_promise
+                   .then(inner_result_2 => {
+                       res.status(201).send("Review added successfully");
+                   })
+                   .catch(err => {
+                       res.status(500).send(err);
+                   });
+            })
+            .catch(err => {
+                res.status(500).send(err);
+            });
     })
         .catch(err =>{
             res.status(500).send('Oops... looks like your review was not accepted. Please submit again');
