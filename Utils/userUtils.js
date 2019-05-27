@@ -9,6 +9,23 @@ const question_list = ['What elementary school did you attend?', 'What is the na
 function putParethesis(string){
     return "'" + string + "'";
 }
+
+/**
+ * validates the input for the saveFavoritePoi method
+ * @param req - a given input
+ */
+function validateFavoritePoi(req) {
+    const poiList = req.body.favorite_poi;
+    if (!poiList)
+        return "missing favorite poi array";
+    if (poiList.length > 0)
+        req.body.favorite_poi.forEach(item => {
+            if (!(item.poi && item.personalOrder && item.time))
+                return "missing";
+        });
+    return "Valid";
+}
+
 /**
  * checks if a username already exists. if not, adds the new user's details to the database
  * @param req -
@@ -108,37 +125,44 @@ function insertCategories(username, categories){
  * @param res -
  */
 function login(req, res){
-    let username = req.body.username;
-    let password = req.body.password;
+    if (req.body.username && req.body.password) {
 
-    console.log(username);
-    console.log(password);
+        let username = req.body.username;
+        let password = req.body.password;
 
-    // checks if the username and password are in the database
-    let user_exists_query = db.keyWords.selectAll + db.keyWords.from +"users " + db.keyWords.where + "username = '" +
-        username + "' AND password = '" + password + "'";
+        console.log(username);
+        console.log(password);
 
-    let user_exists = db.execQuery(user_exists_query);
+        // checks if the username and password are in the database
+        let user_exists_query = db.keyWords.selectAll + db.keyWords.from + "users " + db.keyWords.where + "username = '" +
+            username + "' AND password = '" + password + "'";
 
-    user_exists
-        .then(result => {
+        let user_exists = db.execQuery(user_exists_query);
 
-            // user exists
-            if (result.length === 1) {
-                console.log(result);
-                // create and return the token
-                let payload = {name: req.body.username, admin: req.body.admin};
-                let options = {expiresIn: "1d"};
-                const token = jwt.sign(payload, secret, options);
-                res.status(200).send(token);
-            } else {
-                res.status(401).send("Access denied. User doesn't exist");
-            }
-        })
-        .catch(err => {
-            console.log(err);
-            res.sendStatus(500);
-        });
+        user_exists
+            .then(result => {
+
+                // user exists
+                if (result.length === 1) {
+                    console.log(result);
+                    // create and return the token
+                    let payload = {name: req.body.username, admin: req.body.admin};
+                    let options = {expiresIn: "1d"};
+                    const token = jwt.sign(payload, secret, options);
+                    res.status(200).send(token);
+                } else {
+                    res.status(401).send("Access denied. User doesn't exist");
+                }
+            })
+            .catch(err => {
+                console.log(err);
+                res.sendStatus(500);
+            });
+    }
+    else {
+        console.log("missing username or password");
+        res.status(500).send("missing username or password");
+    }
 }
 
 /**
@@ -147,48 +171,57 @@ function login(req, res){
  * @param res -
  */
 function restore_password(req, res){
-    let username = req.body.username;
-    let question = req.body.question;
-    let answer = req.body.answer;
+    if (req.body.username && req.body.question && req.body.answer) {
 
-    console.log(username);
-    console.log(question);
-    console.log(answer);
+        let username = req.body.username;
+        let question = req.body.question;
+        let answer = req.body.answer;
 
-    // checks if the question and answer of the username are correct
-    let answer_correct_query = db.keyWords.select + "username, question, answer " + db.keyWords.from + "usersQuestions " +
-        db.keyWords.where + "username = '" + username + "' AND question = '" + question + "' AND answer = '" + answer + "'";
+        if (question_list.includes(question)) {
+            // checks if the question and answer of the username are correct
+            let answer_correct_query = db.keyWords.select + "username, question, answer " + db.keyWords.from + "usersQuestions " +
+                db.keyWords.where + "username = '" + username + "' AND question = '" + question + "' AND answer = '" + answer + "'";
 
-    let answer_correct_promise = db.execQuery(answer_correct_query);
+            let answer_correct_promise = db.execQuery(answer_correct_query);
 
-    answer_correct_promise
-        .then(result => {
+            answer_correct_promise
+                .then(result => {
 
-            // user exists
-            if (result.length === 1) {
+                    // user exists
+                    if (result.length === 1) {
 
-                // gets the user's password
-                let get_password_query = db.keyWords.select + "password " + db.keyWords.from + "users " +
-                    db.keyWords.where + "username = '" + username + "'";
+                        // gets the user's password
+                        let get_password_query = db.keyWords.select + "password " + db.keyWords.from + "users " +
+                            db.keyWords.where + "username = '" + username + "'";
 
-                let get_password_promise = db.execQuery(get_password_query);
+                        let get_password_promise = db.execQuery(get_password_query);
 
-                get_password_promise
-                    .then(innerResult => {
-                        res.status(200).send(innerResult);
-                    })
-                    .catch(err => {
-                        console.log(err);
-                        res.sendStatus(500);
-                    });
-            } else {
-                res.status(401).send("Access denied. Wrong user / answer");
-            }
-        })
-        .catch(err => {
-            console.log(err);
-            res.sendStatus(500);
-        });
+                        get_password_promise
+                            .then(innerResult => {
+                                res.status(200).send(innerResult);
+                            })
+                            .catch(err => {
+                                console.log(err);
+                                res.sendStatus(500);
+                            });
+                    } else {
+                        res.status(401).send("Access denied. Wrong user / answer");
+                    }
+                })
+                .catch(err => {
+                    console.log(err);
+                    res.sendStatus(500);
+                });
+        }
+        else {
+            console.log("incorrect question");
+            res.status(500).send("incorrect question");
+        }
+    }
+    else {
+        console.log("missing username or password");
+        res.status(500).send("missing username or password");
+    }
 }
 
 /**
@@ -293,15 +326,19 @@ function getUserFavoritePoi(req, res) {
     let username = req.decoded.name;
 
     // gets the chosen favorite categories of the user
-    let get_users_poi_query = db.keyWords.select + "poi " + db.keyWords.from + "usersPoi " + db.keyWords.where +
+    let get_users_poi_query = db.keyWords.selectAll + db.keyWords.from + "usersPoi " + db.keyWords.where +
         "username = '" + username + "'";
 
     let get_users_poi_promise = db.execQuery(get_users_poi_query);
 
     get_users_poi_promise
         .then(result => {
-            if (result.length > 0)
+            if (result.length > 0) {
+                result.forEach(item => {
+                    item.time = new Date(item.time);
+                });
                 res.status(200).send(result);
+            }
             else
                 res.status(404).send("No favorite POI found");
         })
@@ -317,56 +354,67 @@ function getUserFavoritePoi(req, res) {
  * @param res -
  */
 function saveFavoritePoi(req, res) {
-    let username = req.decoded.name;
+    let valid_result = validateFavoritePoi(req);
+    if (valid_result === 'Valid') {
+        let username = req.decoded.name;
 
-    // deletes the old favorite user's pois
-    let delete_favorite_query = db.keyWords.delete + db.keyWords.from + "usersPoi " + db.keyWords.where +
-        "username = '" + username + "'";
+        // deletes the old favorite user's pois
+        let delete_favorite_query = db.keyWords.delete + db.keyWords.from + "usersPoi " + db.keyWords.where +
+            "username = '" + username + "'";
 
-    let delete_favorite_promise = db.execQuery(delete_favorite_query);
+        let delete_favorite_promise = db.execQuery(delete_favorite_query);
 
-    delete_favorite_promise
-        .then(result => {
+        delete_favorite_promise
+            .then(result => {
 
-            // checks if there are any poi object in the favorite poi list
-            if (req.body.favorite_poi.length > 0) {
-
-                // adds a new favorite user's poi
-                let add_favorite_query = db.keyWords.insert + "usersPoi " + db.keyWords.valuesStart +
-                    "'" + username + "', '" + req.body.favorite_poi[0].poi + "', '" + req.body.favorite_poi[0].personalOrder + "', '" +
-                    req.body.favorite_poi[0].time + "')";
-
-                let first = true;
-                req.body.favorite_poi.forEach(item => {
-
-                    // skipping the first item
-                    if (first) {
-                        first = false;
-                        return;
-                    }
+                // checks if there are any poi object in the favorite poi list
+                if (req.body.favorite_poi.length > 0) {
 
                     // adds a new favorite user's poi
-                    add_favorite_query = add_favorite_query + ", ('" + username + "', '" + item.poi + "', '" + item.personalOrder + "', '" +
-                        item.time + "')";
-                });
+                    let add_favorite_query = db.keyWords.insert + "usersPoi " + db.keyWords.valuesStart +
+                        "'" + username + "', '" + req.body.favorite_poi[0].poi + "', '" + req.body.favorite_poi[0].personalOrder + "', '" +
+                        req.body.favorite_poi[0].time + "')";
 
-                add_favorite_query = add_favorite_query + ";";
-                let add_favorite_promise = db.execQuery(add_favorite_query);
+                    let first = true;
+                    req.body.favorite_poi.forEach(item => {
 
-                add_favorite_promise
-                    .catch(err => {
-                        console.log(err);
-                        res.sendStatus(500);
+                        // skipping the first item
+                        if (first) {
+                            first = false;
+                            return;
+                        }
+
+                        // adds a new favorite user's poi
+                        add_favorite_query = add_favorite_query + ", ('" + username + "', '" + item.poi + "', '" + item.personalOrder + "', '" +
+                            item.time + "')";
                     });
-            }
-            res.status(201).send("User's favorite POI list updated");
-        })
-        .catch(err => {
-            console.log(err);
-            res.sendStatus(500);
-        });
+
+                    add_favorite_query = add_favorite_query + ";";
+                    let add_favorite_promise = db.execQuery(add_favorite_query);
+
+                    add_favorite_promise
+                        .then(inner_result => {
+                            res.status(201).send("User's favorite POI list updated");
+                        })
+                        .catch(err => {
+                            console.log(err);
+                            res.sendStatus(500);
+                        });
+                }
+                else
+                    res.status(201).send("User's favorite POI list updated");
+            })
+            .catch(err => {
+                console.log(err);
+                res.sendStatus(500);
+            });
+    }
+    else {
+        console.log(valid_result);
+        res.status(500).send(valid_result);
+    }
 }
-  
+
 function getLastSavedPoi(req, res){
     let username = req.decoded.name;
 
@@ -389,7 +437,7 @@ function getLastSavedPoi(req, res){
         .catch(err => {
             console.log(err);
             res.status(500).send(err);
-        })\
+        });
 }
 
 /*********************      EXPORTS     ************************/
