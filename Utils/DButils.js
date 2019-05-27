@@ -15,7 +15,9 @@ const keyWords = {
     set: "SET ",
     valuesStart: "VALUES (",
     valuesEnd: ");",
-    delete : "DELETE "
+    delete : "DELETE ",
+    contains: "CONTAINS(",
+    like: "LIKE "
 };
 
 let poolConfig = {

@@ -39,7 +39,7 @@ app.listen(port, function () {
 
 /*************************    HTTP METHODS SETUP    ***************************/
 
-app.get('/poi/:rank', (req, res) => {POIUtil.getPoi(req, res)}); // needs to be change to contains
+app.get('/poi/:contain', (req, res) => {POIUtil.getPoi(req, res)}); // needs to be change to contains
 app.get('/poiCategory/:category', (req, res) => {POIUtil.getPoi(req, res)});
 app.get('/poi', (req, res) => {POIUtil.getPoi(req, res)});
 app.get('/randomPoi/:rank', (req, res) => POIUtil.getRandom(req, res));

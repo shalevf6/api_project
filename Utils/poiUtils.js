@@ -3,12 +3,11 @@ var db = require('./DButils');
 
 function getPoi(req, res){
     let params = req.params;
-    let rank = params.rank ? params.rank : 0;
+    let contain = params.contain ? params.contain : "";
     let category = params.category ? params.category : 0;
 
-
     let query = db.keyWords.selectAll + db.keyWords.from + "poi " +
-        db.keyWords.where + "rank >= " + rank;
+        db.keyWords.where + "name "+ db.keyWords.like  + "'%" + contain + "%'";
     if (category){
         query += " AND category = '" + category +"'";
     }
@@ -113,7 +112,28 @@ function getLastPoiReview(req, res){
     }
 }
 
+function validateReview(body){
+    let poi = body.poi || "",
+        rank = body.rank || 0,
+        review = body.review || "";
+    let problems = [];
+    if (!poi)
+        problems.push("no poi given");
+    if (!rank)
+        problems.push("no rank given");
+    if (!review)
+        problems.push("no review given");
+
+    return problems;
+}
+
 function addPoiReview(req, res){
+    let problems = validateReview(req.body);
+    if (problems.length > 0){
+        res.status(400).send({error: "Bad request was given.", info: problems});
+        return;
+    }
+
     let username = putParethesis(req.decoded.name),
         poi = putParethesis(req.body.poi),
         rank = req.body.rank,
