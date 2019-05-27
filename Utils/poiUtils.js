@@ -66,7 +66,11 @@ function getCategories(req, res) {
 }
 
 function updatePoiWatchers(req, res){
-    let poiName = req.body.poi;
+    let poiName = req.body.poi || "";
+    if (!poiName){
+        res.status(400).send({error: "no poi was given to update"});
+        return;
+    }
 
     let query = db.keyWords.update + "poi " +
         db.keyWords.set  + "watched = watched + 1 " +
@@ -121,6 +125,8 @@ function validateReview(body){
         problems.push("no poi given");
     if (!rank)
         problems.push("no rank given");
+    else if (rank<1 || rank>5)
+        problems.push("rank must be an integer between 1-5");
     if (!review)
         problems.push("no review given");
 
