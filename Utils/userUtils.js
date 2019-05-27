@@ -407,6 +407,16 @@ function saveFavoritePoi(req, res) {
     if (valid_result === 'Valid') {
         let username = req.decoded.name;
 
+        let favPoi = req.body.favorite_poi;
+        favPoi.forEach(poi => {
+            let date = new Date(poi.time);
+            if (isNaN(date.getDate())){
+                res.status(400).send({error: "Given dates are not compatible"});
+                return;
+            }
+            poi.time = date.toISOString();
+        });
+
         // deletes the old favorite user's pois
         let delete_favorite_query = db.keyWords.delete + db.keyWords.from + "usersPoi " + db.keyWords.where +
             "username = '" + username + "'";
