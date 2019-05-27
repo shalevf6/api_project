@@ -1,9 +1,11 @@
 var db = require('./DButils');
 const jwt = require('jsonwebtoken');
+const SECRET = 'thisIsASecret';
 
 const question_list = ['What elementary school did you attend?', 'What is the name of the town where you were born?',
     'What is your mother\'s maiden name?', 'What is your favorite sports team?'];
-
+const CATEGORIES = ['clubs' , 'historical', 'museums', 'restaurants'];
+const COUNTRIES = ['Australia', 'Bolivia', 'China', 'Denemark', 'Israel', 'Latvia', 'Monaco', 'August', 'Norway', 'Panama', 'Switzerland', 'USA'];
 
 /**************************     DATABASE FUNCTIONS      **************************/
 function putParethesis(string){
@@ -31,6 +33,47 @@ function validateFavoritePoi(req) {
  * @param req -
  * @param res -
  */
+function validateSignUp(username, password, fName, lName, city, country, email, favoriteCat, questions) {
+    let problems = [];
+    if (!username || username.length<3 || username.length>8){
+        problems.push("username length");
+    }
+    if (!password || password.length<5 || password.length>10){
+        problems.push("password length");
+    }
+    if (!fName)
+        problems.push("no first name");
+    if (!lName)
+        problems.push("no last name");
+    if (!city)
+        problems.push("no city given");
+    if (!country || !COUNTRIES.includes(country))
+        problems.push("bad country given");
+    if (!email || !/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(email))
+        problems.push("bad email");
+    if (!favoriteCat || favoriteCat.length<2){
+        problems.push("must have at least 2 categories");
+    }else{
+        let res = true;
+        favoriteCat.forEach(cat => {
+            res = res && CATEGORIES.includes(cat);
+        });
+        if (!res)
+            problems.push("bad categories given");
+    }
+    if (!questions || questions.length<2){
+        problems.push("must have at least 2 questions")
+    }else {
+        let res = true;
+        questions.forEach(quest => {
+            res = res && question_list.includes(quest.quest) && quest.ans;
+        });
+        if (!res)
+            problems.push("bad questions or answers given")
+    }
+
+    return problems;
+}
 function signUp(req, res){
     let username = req.body.username,
         password = req.body.password,
@@ -39,8 +82,14 @@ function signUp(req, res){
         city = req.body.city,
         country = req.body.country,
         email = req.body.email,
-        favoriteCat = req.body.favoriteCat,
+        favoriteCat = req.body.favoriteCat, // array of categories
         questions = req.body.questions; // should be an array of objects with Q,A
+
+    let problems = validateSignUp(username, password, fName, lName, city, country, email, favoriteCat, questions);
+    if (problems.length > 0){
+        res.status(400).send("Error while signing up. Errors: " + problems.toString());
+        return;
+    }
 
 
     let query = db.keyWords.selectAll + db.keyWords.from + "users " +
