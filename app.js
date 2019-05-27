@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 let port = 3000;
 
 const secret = "thisIsASecret";
-
+exports.SECRET = secret;
 
 app.use(express.json());
 
