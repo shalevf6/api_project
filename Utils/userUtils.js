@@ -197,7 +197,7 @@ function login(req, res){
                     // create and return the token
                     let payload = {name: req.body.username, admin: req.body.admin};
                     let options = {expiresIn: "1d"};
-                    const token = jwt.sign(payload, secret, options);
+                    const token = jwt.sign(payload, SECRET, options);
                     res.status(200).send(token);
                 } else {
                     res.status(401).send("Access denied. User doesn't exist");
