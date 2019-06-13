@@ -3,6 +3,7 @@ var app = express();
 var POIUtil = require('./Utils/poiUtils');
 var userUtil = require('./Utils/userUtils');
 const jwt = require('jsonwebtoken');
+const cors = require('cors');
 
 let port = 3000;
 
@@ -10,6 +11,7 @@ const secret = "thisIsASecret";
 exports.SECRET = secret;
 
 app.use(express.json());
+app.use(cors());
 
 
 app.use('/private', function(req,res,next) {
