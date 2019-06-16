@@ -64,6 +64,15 @@ function getCategories(req, res) {
             res.sendStatus(500);
         });
 }
+/**
+ * gets all countries names from the database
+ * @param req -
+ * @param res -
+ */
+function GetCountries(req, res) {
+            result = {"countries":["Australia","Bolivia","China","Denemark","Israel","Latvia","Monaco","August","Norway","Panama","Switzerland","USA"]};
+            res.send(result)
+}
 
 function updatePoiWatchers(req, res){
     let poiName = req.body.poi || "";
