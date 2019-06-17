@@ -69,7 +69,7 @@ function getCategories(req, res) {
  * @param req -
  * @param res -
  */
-function GetCountries(req, res) {
+function getCountries(req, res) {
             result = {"countries":["Australia","Bolivia","China","Denemark","Israel","Latvia","Monaco","August","Norway","Panama","Switzerland","USA"]};
             res.send(result)
 }
@@ -199,6 +199,7 @@ function putParethesis(string){
 exports.getPoi = getPoi;
 exports.getRandom = getRandomPoi;
 exports.getCategories = getCategories;
+exports.getCountries = getCountries;
 exports.updatePoiWatchers = updatePoiWatchers;
 exports.latestReviews = getLastPoiReview;
 exports.addReview = addPoiReview;
