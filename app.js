@@ -4,6 +4,7 @@ const cors = require('cors');
 var POIUtil = require('./Utils/poiUtils');
 var userUtil = require('./Utils/userUtils');
 const jwt = require('jsonwebtoken');
+const cors = require('cors');
 
 let port = 3000;
 
@@ -54,6 +55,7 @@ app.get('/randomPoi', (req, res) => POIUtil.getRandom(req, res));
 app.post('/login', (req, res) => userUtil.login(req, res));
 app.post('/signUp', (req, res) => userUtil.signUp(req, res));
 app.get('/categories', (req, res) => POIUtil.getCategories(req, res));
+app.get('/countries', (req, res) => POIUtil.getCountries(req, res));
 app.post('/restorePassword', (req, res) => userUtil.restore_password(req, res));
 app.patch('/updateWatchers', (req, res) => POIUtil.updatePoiWatchers(req, res));
 app.get('/questions', (req, res) => userUtil.getQuestions(req, res));

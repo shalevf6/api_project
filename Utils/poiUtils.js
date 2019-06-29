@@ -64,7 +64,15 @@ function getCategories(req, res) {
             res.sendStatus(500);
         });
 }
-
+/**
+ * gets all countries names from the database
+ * @param req -
+ * @param res -
+ */
+function getCountries(req, res) {
+            result = {"countries":["Australia","Bolivia","China","Denemark","Israel","Latvia","Monaco","August","Norway","Panama","Switzerland","USA"]};
+            res.send(result)
+}
 function updatePoiWatchers(req, res){
     let poiName = req.body.poi || "";
     if (!poiName){
@@ -191,6 +199,7 @@ function putParethesis(string){
 exports.getPoi = getPoi;
 exports.getRandom = getRandomPoi;
 exports.getCategories = getCategories;
+exports.getCountries = getCountries;
 exports.updatePoiWatchers = updatePoiWatchers;
 exports.latestReviews = getLastPoiReview;
 exports.addReview = addPoiReview;
