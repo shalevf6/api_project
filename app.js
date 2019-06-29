@@ -1,5 +1,6 @@
 var express = require('express');
 var app = express();
+const cors = require('cors');
 var POIUtil = require('./Utils/poiUtils');
 var userUtil = require('./Utils/userUtils');
 const jwt = require('jsonwebtoken');
@@ -10,7 +11,13 @@ const secret = "thisIsASecret";
 exports.SECRET = secret;
 
 app.use(express.json());
+app.use(cors());
 
+// app.use('/', function(req, res, next) {
+//     res.header("Access-Control-Allow-Origin", "*");
+//     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Origin");
+//     next();
+// });
 
 app.use('/private', function(req,res,next) {
     const token = req.header("x-auth-token");

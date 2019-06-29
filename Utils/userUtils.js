@@ -174,6 +174,7 @@ function insertCategories(username, categories){
  * @param res -
  */
 function login(req, res){
+    console.log("got login request");
     if (req.body.username && req.body.password) {
 
         let username = req.body.username;
@@ -197,7 +198,7 @@ function login(req, res){
                     // create and return the token
                     let payload = {name: req.body.username, admin: req.body.admin};
                     let options = {expiresIn: "1d"};
-                    const token = jwt.sign(payload, secret, options);
+                    const token = jwt.sign(payload, SECRET, options);
                     res.status(200).send(token);
                 } else {
                     res.status(401).send("Access denied. User doesn't exist");
