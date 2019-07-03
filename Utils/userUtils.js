@@ -3,8 +3,8 @@ const jwt = require('jsonwebtoken');
 const SECRET = 'thisIsASecret';
 
 const question_list = ['What elementary school did you attend?', 'What is the name of the town where you were born?',
-    'What is your mother\'s maiden name?', 'What is your favorite sports team?'];
-const CATEGORIES = ['clubs' , 'historical', 'museums', 'restaurants'];
+    'What is your mother maidens name?', 'What is your favorite sports team?'];
+const CATEGORIES = ['Clubs' , 'Historical', 'Museums', 'Restaurants'];
 const COUNTRIES = ['Australia', 'Bolivia', 'China', 'Denemark', 'Israel', 'Latvia', 'Monaco', 'August', 'Norway', 'Panama', 'Switzerland', 'USA'];
 
 /**************************     DATABASE FUNCTIONS      **************************/
@@ -30,8 +30,6 @@ function validateFavoritePoi(req) {
 
 /**
  * checks if a username already exists. if not, adds the new user's details to the database
- * @param req -
- * @param res -
  */
 function validateSignUp(username, password, fName, lName, city, country, email, favoriteCat, questions) {
     let problems = [];
@@ -383,14 +381,10 @@ function getUserFavoritePoi(req, res) {
 
     get_users_poi_promise
         .then(result => {
-            if (result.length > 0) {
-                result.forEach(item => {
-                    item.time = new Date(item.time);
-                });
-                res.status(200).send(result);
-            }
-            else
-                res.status(404).send("No favorite POI found");
+            result.forEach(item => {
+                item.time = new Date(item.time);
+            });
+            res.status(200).send(result);
         })
         .catch(err => {
             console.log(err);

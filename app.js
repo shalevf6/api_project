@@ -1,6 +1,5 @@
 var express = require('express');
 var app = express();
-const cors = require('cors');
 var POIUtil = require('./Utils/poiUtils');
 var userUtil = require('./Utils/userUtils');
 const jwt = require('jsonwebtoken');
